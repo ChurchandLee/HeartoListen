@@ -5,6 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hear to Listen – A Compassionate Space to Be Heard and Heal</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom styles for play button */
+    .play-button-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .play-button-overlay:hover {
+      background: rgba(0, 0, 0, 0.4);
+    }
+    .play-button-circle {
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .play-button-overlay:hover .play-button-circle {
+      background: rgba(255, 255, 255, 1);
+      transform: scale(1.1);
+    }
+    .play-icon {
+      width: 0;
+      height: 0;
+      border-left: 25px solid #16a34a;
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+      margin-left: 5px;
+    }
+    .hidden {
+      display: none !important;
+    }
+  </style>
 </head>
 <body class="bg-gray-100 font-sans flex flex-col min-h-screen">
 
@@ -42,18 +88,20 @@
     <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-start gap-8">
 
       <!-- Video with Play Button -->
-      <div class="flex-shrink-0 w-full md:w-1/3 mt-6 relative" id="videoContainer">
-        <video id="hearVideo" class="w-full rounded-xl shadow-lg border-4 border-green-500">
-          <source src="hear-to-listen.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-        
-        <!-- Play Button Overlay -->
-        <div id="playButton" class="absolute inset-0 flex items-center justify-center cursor-pointer bg-black bg-opacity-30 rounded-xl">
-          <div class="bg-white bg-opacity-90 rounded-full w-20 h-20 flex items-center justify-center hover:bg-opacity-100 transition shadow-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-600" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
+      <div class="flex-shrink-0 w-full md:w-1/3 mt-6">
+        <div style="position: relative;">
+          <video id="hearVideo" 
+                 class="w-full rounded-xl shadow-lg border-4 border-green-500"
+                 preload="metadata">
+            <source src="hear-to-listen.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          
+          <!-- Play Button Overlay -->
+          <div id="playButton" class="play-button-overlay">
+            <div class="play-button-circle">
+              <div class="play-icon"></div>
+            </div>
           </div>
         </div>
         
@@ -106,26 +154,30 @@
   <script>
     const video = document.getElementById('hearVideo');
     const playButton = document.getElementById('playButton');
-    const videoContainer = document.getElementById('videoContainer');
 
-    // When play button is clicked
-    playButton.addEventListener('click', () => {
+    // Play video when button is clicked
+    playButton.addEventListener('click', function() {
       video.play();
-      playButton.style.display = 'none'; // Hide play button when video starts
+      playButton.classList.add('hidden');
     });
 
-    // Show play button again if video is paused
-    video.addEventListener('pause', () => {
-      playButton.style.display = 'flex';
+    // Show play button when video is paused
+    video.addEventListener('pause', function() {
+      playButton.classList.remove('hidden');
     });
 
-    // Hide play button when video is playing
-    video.addEventListener('play', () => {
-      playButton.style.display = 'none';
+    // Hide play button when video starts playing
+    video.addEventListener('play', function() {
+      playButton.classList.add('hidden');
     });
 
-    // Optional: Click anywhere on video to pause/play
-    video.addEventListener('click', () => {
+    // When video ends, show play button again
+    video.addEventListener('ended', function() {
+      playButton.classList.remove('hidden');
+    });
+
+    // Optional: Allow clicking on video itself to pause/play
+    video.addEventListener('click', function() {
       if (video.paused) {
         video.play();
       } else {
